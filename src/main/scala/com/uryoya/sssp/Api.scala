@@ -1,8 +1,9 @@
-package com.urano
+package com.uryoya.sssp
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
-import com.urano.entity.{HelloWorldRequest, HelloWorldResponse}
+import com.uryoya.sssp.entity.HelloWorldRequest
+import com.uryoya.sssp.entity.HelloWorldResponse
 import io.circe.generic.auto._
 import io.finch.Endpoint
 import io.finch._

@@ -1,4 +1,4 @@
-package com.urano
+package com.uryoya.sssp
 
 import com.twitter.app.App
 import com.twitter.finagle.Http
