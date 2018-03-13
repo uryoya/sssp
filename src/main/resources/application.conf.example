@@ -1,0 +1,10 @@
+sssp {
+  timeout = 100  // milliseconds
+  buyers = [
+    "http://localhost:8888/bid",
+  ]
+}
+server {
+  host = "localhost"
+  port = 8080
+}
