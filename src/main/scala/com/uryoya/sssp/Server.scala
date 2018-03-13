@@ -7,7 +7,7 @@ import com.twitter.util.Await
 object Server extends App {
   def main(): Unit = {
 
-    val addr   = ":8080"
+    val addr   = s":${config.server.port}"
     val server = Http.server.serve(addr, new Api().service)
 
     onExit { Await.result(server.close) }

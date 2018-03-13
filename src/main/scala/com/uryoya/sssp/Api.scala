@@ -2,8 +2,8 @@ package com.uryoya.sssp
 
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
-import com.uryoya.sssp.entity.HelloWorldRequest
-import com.uryoya.sssp.entity.HelloWorldResponse
+import com.uryoya.sssp.controller.{AdController, BuyerController}
+import com.uryoya.sssp.entity._
 import io.circe.generic.auto._
 import io.finch.Endpoint
 import io.finch._
@@ -11,20 +11,27 @@ import io.finch.circe._
 
 class Api {
   val service: Service[Request, Response] = {
-    // $ curl localhost:8080/helloworld
-    // {"hello":"urano"}
-    val helloWorld1: Endpoint[HelloWorldResponse] =
-      get("helloworld") {
-        Ok(HelloWorldResponse(hello = "world1"))
+    // DSPとして登録する
+    val buyerRegistration: Endpoint[BuyerRegistrationResponse] =
+      post("buyer" :: "registration" :: jsonBody[BuyerRegistrationRequest]) { req: BuyerRegistrationRequest =>
+        BuyerController.registration(req) match {
+          case Right(resp) => Ok(resp)
+          case Left(err) => BadRequest(err)
+        }
       }
 
-    // $ curl -d '{"hello":"urano"}' localhost:8080/hello/world
-    // {"hello":"urano"}
-    val helloWorld2: Endpoint[HelloWorldResponse] =
-      post("hello" :: "world" :: jsonBody[HelloWorldRequest]) { req: HelloWorldRequest =>
-        Ok(HelloWorldResponse(hello = req.hello))
+    // 広告枠出品
+    val adExhibit: Endpoint[AdExhibitResponse] =
+      post("ad" :: "exhibit" :: jsonBody[AdExhibitRequest]) { req: AdExhibitRequest =>
+        AdController.exhibit(req).map {
+          case Right(resp) => Ok(resp)
+          case Left(err) => BadRequest(err)
+        }
       }
 
-    (helloWorld1 :+: helloWorld2).toServiceAs[Application.Json]
+    (
+      buyerRegistration
+        :+: adExhibit
+    ).toServiceAs[Application.Json]
   }
 }
