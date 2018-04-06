@@ -51,5 +51,6 @@ object AdController {
     client(request)
       .map(Right(_))
       .handle { case t => Left(t) }
+      .ensure(client.close())
   }
 }
