@@ -1,5 +1,5 @@
 
-name := "Diary"
+name := "SSSP"
 
 version := "1.0"
 
