@@ -24,7 +24,7 @@ object AdController {
         if response.status == http.Status.Ok
         bid <- decode[AdBidResponse](response.getContentString).toOption
       } yield bid
-      if (bids.length == 0)
+      if (bids.isEmpty)
         Left(new Exception)
       else
         Right(AdExhibitResponse(bids.max.url))
