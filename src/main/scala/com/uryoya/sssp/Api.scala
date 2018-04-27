@@ -25,7 +25,7 @@ class Api {
       post("ad" :: "exhibit" :: jsonBody[AdExhibitRequest]) { req: AdExhibitRequest =>
         AdController.exhibit(req).map {
           case Right(resp) => Ok(resp)
-          case Left(err) => BadRequest(err)
+          case Left(err) => Output.failure(err, com.twitter.finagle.http.Status.MovedPermanently)
         }
       }
 
