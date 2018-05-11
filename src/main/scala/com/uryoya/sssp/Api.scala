@@ -23,7 +23,7 @@ class Api {
     // 広告枠出品
     val adExhibit: Endpoint[AdExhibitResponse] =
       post("ad" :: "exhibit" :: jsonBody[AdExhibitRequest]) { req: AdExhibitRequest =>
-        AdController.exhibit(req).map {
+        AdController.exhibitMock(req).map {
           case Right(resp) => Ok(resp)
           case Left(err) => Output.failure(err, com.twitter.finagle.http.Status.MovedPermanently)
         }
