@@ -13,6 +13,7 @@ import com.uryoya.sssp.entity.{AdBidRequest, AdBidResponse, AdExhibitRequest, Ad
 import com.uryoya.sssp.config
 
 object AdController {
+  val client = mkClient()
   def exhibit(req: AdExhibitRequest): Future[Either[Exception, AdExhibitResponse]] = {
     val requests: Future[Seq[Either[Throwable, http.Response]]] = Future.collect(
       config.sssp.buyers.map(buyer => requestToDsp(new java.net.URI(buyer)))
@@ -29,6 +30,12 @@ object AdController {
       else
         Right(AdExhibitResponse(bids.max.url))
     }
+  }
+
+  def example(): Future[AdExhibitResponse] = {
+    val req = http.Request(http.Method.Get, "/users/uryoya")
+    req.host = "api.github.com"
+    client(req).map(r => AdExhibitResponse(r.contentString)).onFailure(println(_))
   }
 
   private def requestToDsp(url: java.net.URI): Future[Either[Throwable, http.Response]] = {
@@ -52,5 +59,9 @@ object AdController {
       .map(Right(_))
       .handle { case t => Left(t) }
       .ensure(client.close())
+  }
+
+  private def mkClient(): Service[http.Request, http.Response] = {
+    Http.client.withTls("api.github.com").newService("api.github.com:443")
   }
 }

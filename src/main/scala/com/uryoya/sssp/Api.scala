@@ -29,9 +29,15 @@ class Api {
         }
       }
 
+    val example: Endpoint[AdExhibitResponse] =
+      get("example") {
+        AdController.example().map(Ok(_))
+      }
+
     (
       buyerRegistration
         :+: adExhibit
+        :+: example
     ).toServiceAs[Application.Json]
   }
 }
