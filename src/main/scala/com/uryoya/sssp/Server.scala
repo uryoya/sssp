@@ -3,6 +3,7 @@ package com.uryoya.sssp
 import com.twitter.app.App
 import com.twitter.finagle.{Http, Service, http}
 import com.twitter.util.{Future, Await}
+import com.twitter.conversions.time._
 import io.finch._
 import io.finch.circe._
 //import io.finch.syntax._
@@ -36,9 +37,14 @@ object Server extends App {
   def mkHttpClient(url: java.net.URL): Service[http.Request, http.Response] = {
     val port = if (url.getPort == -1) url.getDefaultPort else url.getPort
     if (url.getProtocol == "https")
-      Http.client.withTls(url.getHost).newService(url.getHost + ":" + port)
+      Http.client
+        .withTls(url.getHost)
+        .withRequestTimeout(config.sssp.timeout.millisecond)
+        .newService(url.getHost + ":" + port)
     else
-      Http.client.newService(url.getHost + ":" + port)
+      Http.client
+        .withRequestTimeout(config.sssp.timeout.millisecond)
+        .newService(url.getHost + ":" + port)
   }
 
   /* DSPへのリクエストを作成する関数 */
