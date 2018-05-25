@@ -72,7 +72,7 @@ object Server extends App {
           .map(nonEmptyBids => nonEmptyBids.maxBy(_.price).url)
         maybeMaxBidUrl match {
           case Some(maxBidUrl) => Ok(AdResponse(maxBidUrl))
-          case None => NoContent
+          case None => BadRequest(new Exception) // NoContent
         }
       }
     }
