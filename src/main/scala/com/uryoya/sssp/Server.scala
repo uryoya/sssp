@@ -12,6 +12,7 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.circe.parser._
+import cats.syntax.either._
 
 object Server extends App {
   val sspName: String = "SSSP"
@@ -26,6 +27,8 @@ object Server extends App {
   object SSPRequest {
     implicit val encodeSSPRequest: Encoder[SSPRequest] =
       Encoder.forProduct1("app_id")(a => a.appId)
+    implicit val decodeSSPRequest: Decoder[SSPRequest] =
+      Decoder.forProduct1("app_id")(SSPRequest.apply)
   }
   case class SSPResponse(url: String)
 
@@ -37,12 +40,20 @@ object Server extends App {
   object DSPRequest {
     val format: java.time.format.DateTimeFormatter =
       java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHMMss.SSSS")
+    implicit val decodeLocalDateTime: Decoder[java.time.LocalDateTime] =
+      Decoder.decodeString.emap { str =>
+        Either.catchNonFatal(java.time.LocalDateTime.from(format.parse(str))).leftMap(t => "LocalDateTime")
+      }
     implicit val encodeDSPRequest: Encoder[DSPRequest] =
       Encoder.forProduct4("ssp_name", "request_time", "request_id", "app_id")(a =>
         (a.sspName, a.requestTime.format(format), a.requestId, a.appId))
+    implicit val decodeDSPRequest: Decoder[DSPRequest] =
+      Decoder.forProduct4("ssp_name", "request_time", "request_id", "app_id")(DSPRequest.apply)
   }
   case class DSPResponse(requestId: String, url: String, price: Int)
   object DSPResponse {
+    implicit val encodeDSPResponse: Encoder[DSPResponse] =
+      Encoder.forProduct3("request_id", "url", "price")(a => (a.requestId, a.url, a.price))
     implicit val decodeDSPResponse: Decoder[DSPResponse] =
       Decoder.forProduct3("request_id", "url", "price")(DSPResponse.apply)
   }
@@ -50,6 +61,8 @@ object Server extends App {
   object WinNotice {
     implicit val encodeWinNotice: Encoder[WinNotice] =
       Encoder.forProduct2("request_id", "price")(a => (a.requestId, a.price))
+    implicit val decodeWinNotice: Decoder[WinNotice] =
+      Decoder.forProduct2("request_id", "price")(WinNotice.apply)
   }
   case class WinResponse(result: String)
 
