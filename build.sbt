@@ -7,6 +7,8 @@ scalaVersion := "2.12.4"
 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 resolvers += "lightshed-maven" at "http://dl.bintray.com/content/lightshed/maven"
+resolvers += Resolver.sonatypeRepo("releases")
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 //
 // variables
@@ -42,6 +44,8 @@ libraryDependencies ++= Seq(
 
 assemblyMergeStrategy in assembly := {
   case PathList(ps @ _*) if ps.last endsWith ".properties" => MergeStrategy.first
+  case PathList(ps @ _*) if ps.last endsWith ".class" => MergeStrategy.first
+  case PathList(ps @ _*) if ps.last == "BUILD" => MergeStrategy.discard
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)

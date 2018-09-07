@@ -13,7 +13,8 @@ object Config {
 
   final case class SsspConfig(
                                timeout: Int, // milli second
-                               buyers: List[String],
+                               dsp: List[Dsp],
                              )
   final case class ServerConfig(host: String, port: Int)
+  final case class Dsp(adRequest: String, winNotice: String)
 }
